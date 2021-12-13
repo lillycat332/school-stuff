@@ -1,39 +1,56 @@
 from arrayLib import *
- 
-class queueFullException(Exception):
+
+class queueFullException(BaseException):
     """raised when a queue is full"""
     pass
 
-class queueEmptyException(Exception):
+class queueEmptyException(BaseException):
     """raised when a queue is full"""
     pass
 
-class naiveQueue(Array):
+
+class naiveQueue():
     def __init__(self, l):
-        self.__myArray = Array(l)
+        """
+        naive queue
+        - takes l : Integer = length of the queue
+        - crashes when queue has been filled, because the head and tail have no way to deal with reaching the end of the queue.
+        """
+        self.__Array = Array(l)
         self.__head = 0
         self.__tail = 0
         self.__size = l
 
-    def enqueue(self, v):
-        self.__myArray.assign(self.__tail, v)
-        self.__tail += 1
+    def enqueue(self, invalue):
+        """
+        Adds invalue to the end of the queue.
+        """
+        try:
+            self.__Array.assign(self.__tail, invalue)
+            self.__tail += 1
+        except:
+            raise queueFullException()
 
     def dequeue(self):
-        r = self.__myArray.get(self.__head)
-        self.__head += 1
-        return r
+        """
+        Dequeues top element from the queue
+        """
+        try:
+            r = self.__Array.get(self.__head)
+            self.__head += 1
+            return r
+        except:
+            raise queueEmptyException()
 
-    def printArray(self):
-        # printArray - used to Print contents of an array.
-        for i in range(0, self.__size):
+    def printQueue(self):
+        # printQueue - used to Print contents of a Queue.
+        for i in range(self.__head, self.__tail):
             print(self.__myArray.get(i))
 
 class circularQueue():
     """
     Circular Queue
     - Holds n - 1 items
-    - FIFO
     - head and tail loop from n to 0
     """
     def __init__(self, l):
@@ -66,7 +83,7 @@ class circularQueue():
         Dequeue:
         - Dequeues the next item from the queue
         - Moves the head to accomodate for the removed item
-        - Handles the seamless transfer from end of queue to start with the head and tail pointers
+        - Handles the transfer from end of queue to start with the head and tail pointers to prevent crashing after queue is filled
         """
         if (self.__head == -1):
             raise queueEmptyException()
@@ -82,6 +99,13 @@ class circularQueue():
             self.__head = (self.__head + 1) % self.__max
             return r
 
+    def peek(self):
+        """
+        peek
+        - returns the top value of the queue
+        """
+        return self.__queue.get(self.__head)
+
     def printqueue(self):
         """
         Prints contents of queue for debug purposes
@@ -90,27 +114,69 @@ class circularQueue():
             print(self.__queue.get(i))
  
 class priorityQueue():
+    """
+    Priority Queue
+    - a list of n queues
+    - queues have priority based on their position in the list (ie. 0 is the highest priority)
+    - queues with a higher priority will be dequeued first
+    """
     def __init__(self, l1, l2):
         self.__list = []
         for i in range(0, l1):
             self.__list.append(circularQueue(l2))
            
-    def enqueue(self, q, n):
-        self.__list[q].enqueue(n)
+    def enqueue(self, queue, value):
+        self.__list[int(queue)].enqueue(value)
        
     def dequeue(self):
         for i in self.__list():
-            if i.get(i) != None:
-                self.__list[q].dequeue()
-
+            if self.__list[i].peek() != None:
+                self.__list[i].dequeue()
         
-    def prin(self):
+    def printqueue(self):
         for i in self.__list:
             print("\n")
             i.printqueue()
 
-myq = priorityQueue(4, 4)
+class priorityQueueApp():
+    def __init__(self):
+        self.__queue = priorityQueue(4, 4)
+    def main(self):
+        while True:
+            queueChoice = input("Enter the queue to enqueue to or nothing to dequeue: ")
+            if queueChoice != "":
+                inputValue = input("Enter a value to add to the queue: ")
+                self.__queue.enqueue(queueChoice, inputValue)
+            else:
+                self.__queue.dequeue()
+            self.__queue.printqueue()
+            
 
-while True:
-    myq.enqueue(1, "Cat")
-    myq.prin()
+class testApp():
+    def __init__(self, l):
+        length = l
+        self.__Queue = naiveQueue(8)
+    def main(self):
+        while True:
+            inputVal = input("Please enter a value to enqueue, or nothing to dequeue: ")
+            if inputVal != "":
+                try:
+                    self.__Queue.enqueue(inputVal)
+                except queueFullException:
+                    print("queue is full")
+                self.__Queue.printArray()
+                
+            else:
+                try:
+                    self.__Queue.dequeue()
+                except queueEmptyException:
+                    print("Queue is empty")
+                finally:
+                    self.__Queue.printQueue()
+                # try:
+                
+                # except queueFullException:
+                #     print("queue is full")
+
+myApp = priorityQueueApp()
+myApp.main()

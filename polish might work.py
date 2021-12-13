@@ -1,6 +1,6 @@
 import operator
 from arrayLib import *
-ops = {'+': operator.add, '-': operator.sub,
+operators = {'+': operator.add, '-': operator.sub,
        '*': operator.mul, '/': operator.truediv}
 
 
@@ -19,7 +19,7 @@ class Stack(Array):
         # Accepts a value of any type.
         # If stack is full, then raises Stack Overflow
         myvalue = value
-        if self.__TOS - 1 < self.__size:
+        if self.__TOS < self.__size:
             self.__myArray.assign(self.__TOS, myvalue)
             # print(self.__TOS)
 
@@ -48,14 +48,35 @@ class Stack(Array):
         return self.__TOS
 
 
-while True:
-    st = Stack(4)
-    for tk in input().split():
-        if tk in ops:
-            y, x = st.pop(), st.pop()
-            z = ops[tk](x, y)
-        else:
-            z = float(tk)
-        st.push(z)
-    if Stack.getTos:
-        print(st.pop())
+class RPNApp():
+    """
+    RPN calculator
+    - uses a stack to store the values
+    - operators - A lambda with each supported operator in it
+    - token list - a list containing the input expression split up so we can parse it
+    """
+    def __init__(self, expression):
+        self.__operators = {
+            '+': operator.add, '-': operator.sub, '*': operator.mul, '/': operator.truediv }
+        self.__Stack = Stack(8)
+        self.__tokenList = expression.split(" ")
+
+    def main(self):
+        while True:
+            for token in self.__tokenList:
+                # first check if the token is a number, then add it to the stack
+                if set(token).issubset(set(".0123456789")):
+                    self.__Stack.push(token)
+                elif token in self.__operators:
+                    # then add the op
+                    self.__Stack.push(token)
+            operator = self.__Stack.pop()
+            operand1 = int(self.__Stack.pop())
+            operand2 = int(self.__Stack.pop())
+            
+            self.__Stack.push(self.__operators[operator](operand1, operand2))
+        print(self.__Stack.pop())
+
+testvar = input("Enter an expression: ")
+testApp = RPNApp(testvar)
+testApp.main()
