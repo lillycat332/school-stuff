@@ -24,10 +24,10 @@ class circularQueue():
             print("circular queue is empty")
 
         elif (self.__head == self.__tail):
-            v = self.__queue.get(self.__head)
-            self.__head = -1
-            self.__tail = -1
-            return v
+            v = self.__queue.get(self.__head)       # gets the head of the queue and assigns it to v
+            self.__head = -1                        # decreases head by 1
+            self.__tail = -1                        # decreases tail by 1
+            return v                                # returns v which is the head of the queue
         else:
             v = self.__queue.get(self.__head)
             self.__head = (self.__head + 1) % self.__max
