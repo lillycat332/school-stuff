@@ -1,46 +1,43 @@
-from dataclasses import *
-import time
-from typing import *
-from sys import argv
-from os import system, name
-import threading
-from pyfiglet import figlet_format
+from dataclasses import *;import time;from typing import *;from os import system, name;import threading;from pyfiglet import figlet_format
 
 """
 	 📝 Notebook app ✨
 	 - Simple note taking 📝 app with dictionaries 
 	 TODO:
-	 - Implement a full UI 👀 (Ideally a full native ui, but CLI  will do)
+	 - Implement a full UI 👀 (Ideally a full native ui, but CLI will do)
 	 - Implement saving to disk using Pickle 💾
 """
 
-@dataclass(unsafe_hash = True)
+@dataclass()
 class page:
 	"""
-	This is the page dataclass (which is basically the python version of structs, i guess) that is used to hold the data of a page.
+	This is the page dataclass (which is basically the python version of a hashable struct, i guess?) that is used to hold the data of each page.
 	"""
 	title     :  str
 	content	  :  str
 	created   :  float
 	#modified  :  datetime
 
-class cmds:
-	def help(self) -> None:
-		print("""Welcome to TwoNote!
-- To view a list of available commands, type ls command
-- To learn how to use TwoNote, type tntutor
-- To exit, type qa""")
+class strings():
+	helpmsg = "Welcome to TwoNote!\n- To view a list of available commands, type ls command\n- To learn how to use TwoNote, type tntutor\n- To exit, type qa"
 
-	def ls(self, arg : str) -> None:
-		if arg == "cmds" or arg == "commands":
-			print("""Commands:
+	cmds = """Commands:
 h or help: print help
 n or new: new page
 w or write or save or wo: write out pages to disk
 qa: quit all (WARNING: DOES NOT FLUSH DATA! MAKE SURE TO SAVE BEFORE!)
 f or find or search: search for pages based on tags and titles
 ls command: list available commands
-ls page: list pages""")
+ls page: list pages"""
+
+class cmds:
+	strn = strings()
+	def help(self) -> None:
+		print(strn.helpmsg)
+
+	def ls(self, arg : str) -> None:
+		if arg == "cmds" or arg == "commands":
+			print(strn.cmdslist)
 
 		elif arg == "notes" or arg == "pages":
 			print(run.notebook)
@@ -53,7 +50,7 @@ ls page: list pages""")
 		pass
 
 	def clear(self) -> None:
-		# clear clears the screen, but i can't just call system("clear") because windows is annoying and doesn't do clear, it does cls for whatever reason
+		""" clear clears the screen, but i can't just call system("clear") because windows is annoying and doesn't do clear, it does cls for whatever reason so this is just a check whether on a posix (good) os or a windows (awful) os"""
 		if name == 'nt':
 			_ = system('cls')
 		# for good operating systems, it calls clear 
@@ -97,14 +94,14 @@ class App(object):
 		while Alive:
 			command : str = input("->  ")
 			if command == "qa":
-				confirm = input("really wanna quit? (y / n):  ")
+				confirm = input("really wanna quit? any unsaved changes will be lost! (y / n):  ")
 				if confirm in "Yy":
 					print("goodbye!")
 					Alive = False
 				else:pass;
 
 			elif command == "new":
-				self.EditorView()
+				self.NewNoteView()
 
 			else:
 				if " " in command:
@@ -123,7 +120,7 @@ class App(object):
 						try: method();
 						except: print("Command %s requires an argument." % command)
 
-	def EditorView(self) -> None:
+	def NewNoteView(self) -> None:
 		__Alive : bool = True
 		while __Alive:
 			name    = input("Enter the name of the note ->  ")

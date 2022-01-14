@@ -1,10 +1,9 @@
 import sys
+from typing import *
 
-def binarySearch(alist, value):
+def binarySearch(alist : list[int], value : int) -> bool:
 	"""
-	Performs a binary search through aList looking for anItem
-	- aList is a sorted list
-	- anItem is a string or number
+	Performs a binary search through aList[int] looking for anItem[int]
 	Returns - True or False (bool)
 	"""
 	low = 0
