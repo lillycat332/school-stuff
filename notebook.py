@@ -1,10 +1,11 @@
-from dataclasses import dataclass;import datetime;import gc;import time;from typing import *;from sys import argv;import pyfiglet
+from dataclasses import *;import datetime;import time;from typing import *;from sys import argv;from os import system, name; import threading
+import pyfiglet # type: ignore
 
 """
 	 📝 Notebook app ✨
-	 - Simple note taking app with dictionaries 
-	 TODO: 	
-	 - Implement a GUI 👀(Ideally a full native ui, but cli will do)
+	 - Simple note taking 📝 app with dictionaries 
+	 TODO:
+	 - Implement a full UI 👀 (Ideally a full native ui, but CLI  will do)
 	 - Implement saving to disk using Pickle 💾
 """
 
@@ -15,12 +16,10 @@ class page:
 	"""
 	title     :  str
 	content	  :  str
-	created   :  datetime
-	modified  :  datetime
+	created   :  float
+	#modified  :  datetime
 
-class cmds():
-	def yyxy(self):
-		print("stan loona for clear skin")
+class cmds:
 	def help(self):
 		print("""
 Welcome to TwoNote!
@@ -30,7 +29,7 @@ Welcome to TwoNote!
 		""")
 
 	def ls(self, arg):
-		if arg == "cmds" or "commands":
+		if arg == "cmds" or arg == "commands":
 			print("""
 Commands:
 h or help: print help
@@ -42,14 +41,22 @@ ls command: list available commands
 ls page: list pages
 			""")
 
+		elif arg == "notes" or arg == "pages":
+			print(run.notebook)
+
 	def write(self):
 		pass
 
 	def find(self):
 		pass
 
-	def new(self):
-		pass
+	def clear(self):
+		# clear clears the screen, but i can't just call system("clear") because windows is annoying and doesn't do clear, it does cls for whatever reason
+		if name == 'nt':
+			_ = system('cls')
+		# for good operating systems, it calls clear 
+		else:
+			_ = system('clear')
 
 	# Aliases - these are just to provide multiple names for one command without writing it out several times
 	h    =  help
@@ -57,37 +64,35 @@ ls page: list pages
 	wo   =  write
 	save =  write
 	f    =  find
-	n    =  new
 
 class App():
-	def __init__(debug : bool = False):
-		__debugEnabled__ = debug
-		__notebook__ = {}
-
+	def __init__(self):
+		self.notebook : Dict = {"none" : None}
 
 	def addpage(self, t : str, c : str = "", tags : List = []) -> None:
 		"""
-		addpage() (public function)
-		- adds a new page to the notebook
+		addpage()
+		- adds a new page named t with optional content c and optional tags t to the notebook
 		- returns None (void)
 		"""
-		self.__notebook__[t] = page(title = t, content = c, created = time.time())
+		self.notebook[t] = page(title = t, content = c, created = time.time())
 
-	def addtag(self, t, n) -> None:
-		"""
-		addtag() 
-		- add tag t to notebook n
-		- returns None
-		"""
-		self.tags[n] = t
+	# def addtag(self, t, n) -> None:
+	# 	"""
+	# 	addtag() 
+	# 	- add tag t to notebook n
+	# 	- returns None
+	# 	"""
+	# 	self.tags[n] = t
 
-	def main(self) -> None:
+	def ContentView(self) -> None:
 		banner = pyfiglet.figlet_format("TwoNote")
-		print("Welcome to TwoNote! \nType help or h to see more information, or type qa to quit.\n")
 		print(banner)
+		print("Welcome to TwoNote! \nType help or h to see more information, or type qa to quit.\n")
 		lCmds = cmds()
 		Alive = True
-		while Alive == True:
+
+		while Alive:
 			command : str = input("->  ")
 			if command == "qa":
 				confirm = input("really wanna quit? (y / n):  ")
@@ -96,26 +101,34 @@ class App():
 					Alive = False
 				else:pass;
 
+			elif command == "new":
+				self.EditorView()
+
 			else:
 				if " " in command:
 					strarg  : str = str(command.split(" ")[1])
 					command = str(command.split(" ")[0])
-					try:
-						method = getattr(lCmds, command)
-					except:
-							print("Unrecognized command %s. Enter h or help for information." % command)
+					try: method = getattr(lCmds, command)
+					except: print("Unrecognized command %s. Enter h or help for information." % command)
 					else:
-						try:method(str(strarg));
-						except: print("Trailing argument %s in command %s." %(strarg, command))
+						try: method(str(strarg));
+						except Exception as e: print("Trailing argument %s in command %s. exception raised: %s" %(strarg, command, e))
 
 				else:
-					try:
-						method = getattr(lCmds, command)
-					except:
-							print("Unrecognized command %s. Enter h or help for information." % command)
+					try: method = getattr(lCmds, command)
+					except: print("Unrecognized command %s. Enter h or help for information." % command)
 					else:
-						try:method();
+						try: method();
 						except: print("Command %s requires an argument." % command)
 
+	def EditorView(self) -> None:
+		__Alive : bool = True
+		while __Alive:
+			name    = input("Enter the name of the note ->  ")
+			content = input("Enter the content of the note ->  ")
+			tags    = input("Enter some tags (seperated by commas)->  ").split(",")
+			self.addpage(name, content, tags)
+			__Alive = False
+
 run = App()
-run.main()
+run.ContentView()
