@@ -1,5 +1,10 @@
-from dataclasses import *;import datetime;import time;from typing import *;from sys import argv;from os import system, name; import threading
-import pyfiglet # type: ignore
+from dataclasses import *
+import time
+from typing import *
+from sys import argv
+from os import system, name
+import threading
+from pyfiglet import figlet_format
 
 """
 	 📝 Notebook app ✨
@@ -20,37 +25,34 @@ class page:
 	#modified  :  datetime
 
 class cmds:
-	def help(self):
-		print("""
-Welcome to TwoNote!
+	def help(self) -> None:
+		print("""Welcome to TwoNote!
 - To view a list of available commands, type ls command
 - To learn how to use TwoNote, type tntutor
-- To exit, type qa
-		""")
+- To exit, type qa""")
 
-	def ls(self, arg):
+	def ls(self, arg : str) -> None:
 		if arg == "cmds" or arg == "commands":
-			print("""
-Commands:
+			print("""Commands:
 h or help: print help
 n or new: new page
 w or write or save or wo: write out pages to disk
 qa: quit all (WARNING: DOES NOT FLUSH DATA! MAKE SURE TO SAVE BEFORE!)
 f or find or search: search for pages based on tags and titles
 ls command: list available commands
-ls page: list pages
-			""")
+ls page: list pages""")
 
 		elif arg == "notes" or arg == "pages":
 			print(run.notebook)
+		else: print("ls: unrecognized argument %s" % arg)
 
-	def write(self):
+	def write(self) -> None:
 		pass
 
-	def find(self):
+	def find(self) -> None:
 		pass
 
-	def clear(self):
+	def clear(self) -> None:
 		# clear clears the screen, but i can't just call system("clear") because windows is annoying and doesn't do clear, it does cls for whatever reason
 		if name == 'nt':
 			_ = system('cls')
@@ -65,11 +67,11 @@ ls page: list pages
 	save =  write
 	f    =  find
 
-class App():
-	def __init__(self):
-		self.notebook : Dict = {"none" : None}
+class App(object):
+	def __init__(self) -> None:
+		self.notebook : Dict[str, Any] = {}
 
-	def addpage(self, t : str, c : str = "", tags : List = []) -> None:
+	def addpage(self, t : str, c : str = "", tags : List[str] = []) -> None:
 		"""
 		addpage()
 		- adds a new page named t with optional content c and optional tags t to the notebook
@@ -86,7 +88,7 @@ class App():
 	# 	self.tags[n] = t
 
 	def ContentView(self) -> None:
-		banner = pyfiglet.figlet_format("TwoNote")
+		banner = figlet_format("TwoNote")
 		print(banner)
 		print("Welcome to TwoNote! \nType help or h to see more information, or type qa to quit.\n")
 		lCmds = cmds()
