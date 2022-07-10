@@ -5,6 +5,7 @@ class Node():
         self.left  = None
         self.right = None
         self.data = data
+
 class Tree():
     """
     Tree class, which holds all the nodes and provides functions to manipulate the tree.
@@ -28,6 +29,7 @@ class Tree():
             result.append(root.data)
             result += self.traverseInOrder(root.right)
         return result
+
 def render():
     win = turtle.Screen()
     win.bgcolor("white")
@@ -50,4 +52,6 @@ def main():
         tree.insertNode(root, value)
     print("In Order Traversal:")
     print(tree.traverseInOrder(root))
-main()
+
+if __name__ == "__main__":
+	main()
